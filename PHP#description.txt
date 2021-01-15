@@ -1,0 +1,143 @@
+#localhost 경로
+C:\Bitnami\wampstack-7.3.15-2\apache2\htdocs
+
+#PHP
+- 대표적인 서버 사이드 스크립트 언어 (<->대표적인 클라이언트 측 스크립트 : JavaScript)
+- 소규모 웹 페이지 제작시 기본적으로 웹 관련 함수들이 많아서 생산성이 높다는 점에서 사용자, 사용처가 많음
+- 오픈 소스인데 포팅된 곳이 많아 모든 웹 서버에서 실행할 수 있음
+- Perl 언어의 영향을 받아 변수 이름 앞에 $를 붙임+문자열끼리 결합할때 점(.)기호를 씀
+- 숫자 연산은 더하기(+) 사용
+- 상태가 없음 (stateless) : PHP 웹 서버에 요청을 할 때 해당 스크립트를 실행하고 바로 종료되고 새로 요청이 들어오면 새로 시작됨
+- <?php ... ?> 태그 사용
+
+#PHP 설정
+- C:\Bitnami\wampstack-7.3.15-2\php 에서 php(type : 구성파일) 우클릭>편집 한 후, display_errors를 On으로 설정, opcache에서 enable=0으로 설정
+- 위 변경 후 error가 눈에 보임 but 클라이언트도 볼 수 있음 + 중요한 정보를 누출시킬 수 있음 -> 실제로 서비스 할 때는 Off로 해야함
+- 설정 후 bitnami WAMP stack manager Tool 실행시켜서 Manage Servers>Apache Web Server 를 restart 하기
+
+#PHP 출력
+- echo 또는 print 사용
+- 둘 다 줄바꿈 X ('<br>'을 넣어주어야 함)
+- <?php echo ... ?>은 <?= ... ?>로 사용 가능
+(ex)
+<?php echo "hello world"; ?>
+<?php echo strlen("hello world"); ?> 	//문자열 길이 출력 : strlen()
+<?php print("hello world"); ?>
+
+#PHP 변수
+- 변수 앞에 $를 붙임
+(ex)
+$a = 10;
+
+#GET으로 넘어온 데이터 표시 (URL의 querystring)
+- $_GET['필드명'] 
+- 여러 개 사용 : &으로 묶기 => ?name=Huiju&address=서울& ... 
+(ex)
+URL - 127.0.0.1/PHP/prameter.php?name=Huiju
+parameter.php - 안녕하세요. <?php echo $_GET['name']; ?> 님 
+(res)
+안녕하세요. Huiju님
+
+#POST로 넘어온 데이터 표시
+- $_POST['필드명']
+
+#줄바꿈 반영 함수 : nl2br
+- 원래 기본적으로 웹 브라우저는 줄바꿈을 무시함
+- 줄바꿈을 그대로 반영해주는 함수
+(ex)
+$str = "abc
+
+
+def"
+1. echo $str; 할 때
+abc
+def
+2. echo nl2br($str); 할 때
+abc
+
+
+def
+
+#파일 읽기/쓰기 ★
+- 파일 읽기 : file_get_contents('파일의 경로(상대경로)');
+- echo 에 file_get_contents를 바로 출력하면 보안문제가 발생할 수 있으므로 가급적 사용하지 않는 것이 좋음
+- 파일 쓰기 : file_put_contents('파일의 경로(상대경로)', 파일내용);
+- file_put_contents를 할 때, 같은 경로&이름의 파일이 있으면 덮어쓰기 됨
+
+#파일이름 변경
+- 파일 이름 변경 : rename('이전파일경로', '새로운파일경로')
+(ex) rename("/tmp/tmp_file.txt", "/home/user/my_file.txt"); 		// 경로와 파일명 둘 다 바꿈
+- 보통 이전파일은 <input type="hidden" >으로 전송하고, 새로운 파일은 해당 <input>태그에서 가져옴
+
+#파일 삭제
+- 파일 삭제 : unlink('파일경로')
+- 파일을 삭제하는 것은 <a>태그를 사용해서 바로 삭제되도록 하면 안 되고, form 안에 submit타입의 <input>을 만들고, hidden타입의 <input>에 데이터를 담아 post 방식으로 보내야 함
+
+#데이터 타입 + 값
+- var_dump()사용
+(ex)
+<?php
+   var_dump(1); => int(1) 출력
+   var_dump(1+1); => int(2) 출력		// 연산값 나옴
+   var_dump(1>1); => bool(false) 출력		// 연산값 나옴
+   var_dump("11"); =>string(2) "11" 출력	// 2는 문자열의 길이
+?>
+
+#값이 있는지 확인해주는 함수 : isset
+- 값이 있으면 true, 없으면 false를 리턴
+
+#디렉토리 파일을 배열로 반환하는 함수 : scandir()
+- scandir('./data') => 현재 dir의 data 폴더의 하위 폴더/파일을 배열로 반환
+
+#배열 Array
+- 작성방법 : $변수 = array('A','B', ... , 'Z')
+- 배열추가 : array_push($변수, '값')
+- 출력 : print_r($변수)
+
+#form 속성
+- action="주소" (-> form 태그 내부의 정보를 해당 주소로 전송)
+- method = "방식" (-> form 태그 내부의 정보를 전송방식인 GET/POST 결정)
+
+#GET
+- 요청을 전송할 때 필요한 데이터를 body에 담지 않고, querystring을 통해 전송한다.
+- Querystring : URL의 끝에 ?와 함께 이름과 값으로 쌍을 이루는 요청 파라미터 , &으로 연결
+- 특정 페이지를 링크하거나 북마크할 때 유용
+- 페이지를 생성할 때 사용하면 의도하지 않은 페이지가 계속 생산될 수 있음 -> POST 방식 사용
+- 서버에게 동일한 요청을 여러 번 전송하더라도 동일한 응답이 돌아와야 함
+
+#POST
+- 리소스를 생성/변경하기 위해 설계됨
+- GET과 달리 전송해야될 데이터를 HTTP 메세지의 Body에 담아서 전송 
+- Body의 길이 제한 없이 데이터 전송 -> 대용량 데이터 전송 가능
+- 데이터가 Body로 전송되고 내용이 눈에 보이지 않아 GET보다 보안적인 면에서 비교적 안전
+- 반드시 요청 해더의 Content-Type에 요청 데이터의 타입을 표시해야 함
+- 데이터 타입을 표시하지 않으면 서버는 내용이나 URL에 포함된 리소스의 확장명 등으로 데이터 타입 유추 가능
+- 서버에게 동일한 요청을 여러 번 전송해도 응답은 항상 다를 수 있음
+
+#페이지 이동시키기
+- header('Location: 이동장소');
+(ex) header('Location: /index.php?id=CSS');
+
+#리팩토링 refactoring
+- <?php ?> php 태그 내에서 사용
+- require : 같은 파일 여러 번 포함 가능 -> 포함할 파일 없어도 다음 코드 실행X
+- require_once : 같은 파일 한 번만 포함 -> 포함할 파일 없어도 다음 코드 실행X
+- include : 같은 파일 여러 번 포함 가능 -> 포함할 파일 없어도 다음 코드 실행O
+- include_once : 같은 파일 한 번만 포함 -> 포함할 파일 없어도 다음 코드 실행O
+
+#Cross Site Scripting (XSS)
+- 웹 상에서 가장 기초적인 취약점 공격 방법의 일종
+- 악의적인 사용자가 공격하려는 사이트에 스크립트를 넣는 기법
+- 공격에 성공하면 사이트에 접속한 사용자는 삽입된 코드를 실행하게 되며, 보통 의도치 않은 행동을 수행시키거나 쿠키나 세션 토큰 등의 민감한 정보를 탈취함
+-> htmlspecialchars()를 이용해서 사용자가 입력한 내용을 그대로 출력 (script 내용도 실행없이 내용자체 출력됨)
+
+#보안 파일 경로 보호
+- 부모 디렉토리(..)를 이용하여 다른 파일을 알아냄
+-> basename()을 이용해서 순수하게 파일 이름을 반환해줌
+
+
+
+
+
+
+
